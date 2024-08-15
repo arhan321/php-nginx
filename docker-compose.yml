@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - php-fpm
+
+  php-fpm:
+    build: ./php
+    container_name: php-fpm
+    image: php:latest
+    volumes:
+      - ./src:/var/www/html
+
+  mysql:
+    image: mariadb:10.2
+    container_name: mysql
+    restart: unless-stopped
+    ports:
+      - "22106:3306"
+    volumes:
+      - ./database/data:/var/lib/mysql
+      - ./database/conf.d:/etc/mysql/conf.d:ro
+    environment:
+      MYSQL_USER: Djony
+      MYSQL_PASSWORD: Djony!!
+      MYSQL_ROOT_PASSWORD: Djony
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+
+  # phpmyadmin:
+  #   image: phpmyadmin:latest
+  #   container_name: phpmyadmin
+  #   restart: always
+  #   ports:
+  #     - 9051:80
+  #   environment:
+  #     - PMA_ARBITRARY=1
